@@ -1,3 +1,9 @@
+.is-hidden {
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
 .form-wrapper {
   display: flex;
   justify-content: center;
@@ -15,6 +21,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 150ms linear;
 }
 
 .input-field {
@@ -27,7 +34,7 @@
 }
 
 .gallery {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -43,13 +50,16 @@
 
 .photo-card img {
   max-width: 100%;
-  height: auto;
+  height: 290px;
   display: block;
   margin: 0 auto;
 }
 
 .info {
   margin-top: 10px;
+  display: flex;
+  gap: 20px;
+  height: 50px;
 }
 
 .info-item {
@@ -67,4 +77,19 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 150ms linear;
+}
+
+.load-more:hover,
+.load-more:focus,
+.search:hover,
+.search:focus {
+  background-color: #00aeff;
+}
+
+.load-more:active,
+.load-more:active,
+.search:active,
+.search:active {
+  background-color: #0003ff;
 }
