@@ -4,13 +4,21 @@ import { createMurkup } from './js/markup-handler';
 
 const searchForm = document.querySelector('.search-form');
 const contentContainer = document.querySelector('.gallery');
-const loadMoreBtn = document.querySelector('.load-more');
+// const loadMoreBtn = document.querySelector('.load-more');
+const target = document.querySelector('.js-guard')
 
 searchForm.addEventListener('submit', searchHandler);
-loadMoreBtn.addEventListener('click', loadMoreClick);
+// loadMoreBtn.addEventListener('click', loadMoreClick);
 
 const cardApiService = new PixabayApiService();
-// const observer = new IntersectionObserver();
+
+const options = {
+  root: null,
+  rootMargin: '400px',
+};
+const observer = new IntersectionObserver(scrollObserver, options);
+
+
 
 function searchHandler(evt) {
   evt.preventDefault();
@@ -26,9 +34,8 @@ function searchHandler(evt) {
     return;
   }
 
-  cardApiService.resetPage();
-  cardApiService
-    .fetchItems()
+  // cardApiService.resetPage();
+  cardApiService.fetchItems()
     .then(cards => {
       console.log(cards);
       if (cards.data.total === 0) {
@@ -36,13 +43,24 @@ function searchHandler(evt) {
         return;
       }
       appendCardMarkup(cards);
+      observer.observe(target)
       notify.successNotificationHandler();
     })
     .catch(notify.warningNotificationHandler);
 }
 
-function loadMoreClick() {
-  cardApiService.fetchItems().then(appendCardMarkup);
+// function loadMoreClick() {
+//   cardApiService.fetchItems().then(appendCardMarkup);
+// }
+
+function scrollObserver(entries, observer) {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      console.log(entries);
+      cardApiService.fetchItems().then(appendCardMarkup)
+    }
+      
+  })
 }
 
 function appendCardMarkup(result) {

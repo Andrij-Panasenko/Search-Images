@@ -3,7 +3,7 @@ import axios from "axios";
 export default class PixabayApiService {
   constructor() { 
     this.searchQuery = '';
-    this.page = 1;
+    this.page = 13;
   }
   
   async fetchItems() {
