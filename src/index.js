@@ -29,19 +29,22 @@ function searchHandler(evt) {
 
   if (cardApiService.query === '') {
     notify.warningNotificationHandler();
-    console.log('error');
     contentContainer.innerHTML = '';
     return;
   }
 
-  // cardApiService.resetPage();
+  cardApiService.resetPage();
+  if (cardApiService.page === 13) {
+    return
+  }
+
   cardApiService.fetchItems()
     .then(cards => {
-      console.log(cards);
       if (cards.data.total === 0) {
         notify.warningNotificationHandler();
         return;
       }
+
       appendCardMarkup(cards);
       observer.observe(target)
       notify.successNotificationHandler();
@@ -58,16 +61,20 @@ function scrollObserver(entries, observer) {
     if (entry.isIntersecting) {
       console.log(entries);
       cardApiService.fetchItems().then(appendCardMarkup)
-    }
-      
+
+      if (cardApiService.page === 13) {
+        observer.unobserve(target)
+        notify.theEndOfListNotification();
+        }
+      }
   })
 }
 
 function appendCardMarkup(result) {
-  contentContainer.insertAdjacentHTML(
-    'beforeend',
-    createMurkup(result.data.hits)
-  );
+  if (cardApiService.page <= 13) {
+    contentContainer.insertAdjacentHTML('beforeend', createMurkup(result.data.hits)
+    );
+  }
 }
 
 function clearContentContainer() {
