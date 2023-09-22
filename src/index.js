@@ -59,7 +59,6 @@ function searchHandler(evt) {
 function scrollObserver(entries, observer) {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      console.log(entries);
       cardApiService.fetchItems().then(appendCardMarkup)
 
       if (cardApiService.page === 13) {
@@ -71,10 +70,8 @@ function scrollObserver(entries, observer) {
 }
 
 function appendCardMarkup(result) {
-  if (cardApiService.page <= 13) {
     contentContainer.insertAdjacentHTML('beforeend', createMurkup(result.data.hits)
     );
-  }
 }
 
 function clearContentContainer() {
