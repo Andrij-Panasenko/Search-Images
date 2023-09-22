@@ -7,3 +7,9 @@ export function warningNotificationHandler() {
 export function successNotificationHandler() {
   Notiflix.Notify.success('Hooray! We found lots images.');
 }
+
+export function theEndOfListNotification() {
+  Notiflix.Notify.warning(
+    "We're sorry, but you've reached the end of search results."
+  );
+}

@@ -1,8 +1,5 @@
 import PixabayApiService from './js/api-handler';
-import {
-  warningNotificationHandler,
-  successNotificationHandler,
-} from './js/notification';
+import * as notify from './js/notification'
 import { createMurkup } from './js/markup-handler';
 
 const searchForm = document.querySelector('.search-form');
@@ -23,7 +20,7 @@ function searchHandler(evt) {
   clearContentContainer();
 
   if (cardApiService.query === '') {
-    warningNotificationHandler();
+    notify.warningNotificationHandler();
     console.log('error');
     contentContainer.innerHTML = '';
     return;
@@ -35,13 +32,13 @@ function searchHandler(evt) {
     .then(cards => {
       console.log(cards);
       if (cards.data.total === 0) {
-        warningNotificationHandler();
-        return
-      } 
+        notify.warningNotificationHandler();
+        return;
+      }
       appendCardMarkup(cards);
-      successNotificationHandler();
+      notify.successNotificationHandler();
     })
-    .catch(warningNotificationHandler);
+    .catch(notify.warningNotificationHandler);
 }
 
 function loadMoreClick() {
