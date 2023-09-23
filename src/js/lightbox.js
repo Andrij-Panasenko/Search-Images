@@ -1,1 +1,0 @@
-import SimpleLightbox from 'simplelightbox';

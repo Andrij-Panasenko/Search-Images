@@ -2,6 +2,9 @@ import PixabayApiService from './js/api-handler';
 import * as notify from './js/notification'
 import { createMurkup } from './js/markup-handler';
 
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 const searchForm = document.querySelector('.search-form');
 const contentContainer = document.querySelector('.gallery');
 // const loadMoreBtn = document.querySelector('.load-more');
@@ -18,6 +21,7 @@ const options = {
 };
 const observer = new IntersectionObserver(scrollObserver, options);
 
+const galleryItems = new SimpleLightbox('.gallery a');
 
 
 function searchHandler(evt) {
@@ -70,8 +74,8 @@ function scrollObserver(entries, observer) {
 }
 
 function appendCardMarkup(result) {
-    contentContainer.insertAdjacentHTML('beforeend', createMurkup(result.data.hits)
-    );
+  contentContainer.insertAdjacentHTML('beforeend', createMurkup(result.data.hits));
+  galleryItems.refresh();
 }
 
 function clearContentContainer() {
