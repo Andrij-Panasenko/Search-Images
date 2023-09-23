@@ -1,5 +1,5 @@
 import PixabayApiService from './js/api-handler';
-import * as notify from './js/notification'
+import * as notify from './js/notification';
 import { createMurkup } from './js/markup-handler';
 
 import SimpleLightbox from 'simplelightbox';
@@ -8,7 +8,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const searchForm = document.querySelector('.search-form');
 const contentContainer = document.querySelector('.gallery');
 // const loadMoreBtn = document.querySelector('.load-more');
-const target = document.querySelector('.js-guard')
+const target = document.querySelector('.js-guard');
 
 searchForm.addEventListener('submit', searchHandler);
 // loadMoreBtn.addEventListener('click', loadMoreClick);
@@ -22,7 +22,6 @@ const options = {
 const observer = new IntersectionObserver(scrollObserver, options);
 
 const galleryItems = new SimpleLightbox('.gallery a');
-
 
 function searchHandler(evt) {
   evt.preventDefault();
@@ -39,10 +38,11 @@ function searchHandler(evt) {
 
   cardApiService.resetPage();
   if (cardApiService.page === 13) {
-    return
+    return;
   }
 
-  cardApiService.fetchItems()
+  cardApiService
+    .fetchItems()
     .then(cards => {
       if (cards.data.total === 0) {
         notify.warningNotificationHandler();
@@ -50,7 +50,7 @@ function searchHandler(evt) {
       }
 
       appendCardMarkup(cards);
-      observer.observe(target)
+      observer.observe(target);
       notify.successNotificationHandler();
     })
     .catch(notify.warningNotificationHandler);
@@ -61,20 +61,23 @@ function searchHandler(evt) {
 // }
 
 function scrollObserver(entries, observer) {
-  entries.forEach((entry) => {
+  entries.forEach(entry => {
     if (entry.isIntersecting) {
-      cardApiService.fetchItems().then(appendCardMarkup)
+      cardApiService.fetchItems().then(appendCardMarkup);
 
       if (cardApiService.page === 13) {
-        observer.unobserve(target)
+        observer.unobserve(target);
         notify.theEndOfListNotification();
-        }
       }
-  })
+    }
+  });
 }
 
 function appendCardMarkup(result) {
-  contentContainer.insertAdjacentHTML('beforeend', createMurkup(result.data.hits));
+  contentContainer.insertAdjacentHTML(
+    'beforeend',
+    createMurkup(result.data.hits)
+  );
   galleryItems.refresh();
 }
 
