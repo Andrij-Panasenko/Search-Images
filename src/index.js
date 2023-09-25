@@ -23,55 +23,70 @@ const observer = new IntersectionObserver(scrollObserver, options);
 
 const galleryItems = new SimpleLightbox('.gallery a');
 
-function searchHandler(evt) {
+async function searchHandler(evt) {
   evt.preventDefault();
 
-  cardApiService.query = evt.currentTarget.query.value;
+  const queryData = evt.currentTarget.query.value;
+  cardApiService.query = queryData.trim();
 
   clearContentContainer();
 
   if (cardApiService.query === '') {
     notify.warningNotificationHandler();
-    contentContainer.innerHTML = '';
+    clearContentContainer();
     return;
   }
 
   cardApiService.resetPage();
-  if (cardApiService.page === 13) {
-    return;
+
+  try {
+    const cards = await cardApiService.fetchItems();
+    const totalCards = cards.data.totalHits;
+
+    if (cards.data.totalHits === 0) {
+      notify.warningNotificationHandler();
+      return;
+    }
+
+    appendCardMarkup(cards);
+    notify.successNotificationHandler();
+
+    if (totalCards <= cardApiService.perPage) {
+      return;
+    }
+    observer.observe(target);
+  } catch (error) {
+    notify.warningNotificationHandler();
   }
-
-  cardApiService
-    .fetchItems()
-    .then(cards => {
-      if (cards.data.total === 0) {
-        notify.warningNotificationHandler();
-        return;
-      }
-
-      appendCardMarkup(cards);
-      observer.observe(target);
-      notify.successNotificationHandler();
-    })
-    .catch(notify.warningNotificationHandler);
 }
 
 // function loadMoreClick() {
 //   cardApiService.fetchItems().then(appendCardMarkup);
 // }
 
-function scrollObserver(entries, observer) {
-  entries.forEach(entry => {
+async function scrollObserver(entries, observer) {
+  for (const entry of entries) {
     if (entry.isIntersecting) {
-      cardApiService.fetchItems().then(appendCardMarkup);
+      try {
+        if (entry.isIntersecting) {
+          const cards = await cardApiService.fetchItems();
+          const totalCards = cards.data.totalHits;
+          const totalPages = Math.ceil(totalCards / cardApiService.perPage);
+          const currentPage = cardApiService.page - 1;
 
-      if (cardApiService.page === 13) {
-        observer.unobserve(target);
-        notify.theEndOfListNotification();
-      }
-    }
-  });
-}
+          appendCardMarkup(cards);
+
+          if (currentPage === totalPages) {
+            observer.unobserve(target);
+            notify.theEndOfListNotification()
+          }
+        }
+      } catch (error) {
+        notify.warningNotificationHandler();
+      };
+    };
+  };
+};
 
 function appendCardMarkup(result) {
   contentContainer.insertAdjacentHTML(
@@ -84,3 +99,14 @@ function appendCardMarkup(result) {
 function clearContentContainer() {
   contentContainer.innerHTML = '';
 }
+
+// 1 + Прибрати умову в класі апі хендлера ++++++++ done
+//   + в коді than().catch - ні, використати async await ++++++ done
+// 5 + затрімити запит ++++++++++++++ done
+// не вішаю обзервер якщо кількість карток менше значення perPage +++++ done
+
+// Треба сумарне значення карток, поділити на 40 - значення peg_page - його можна спробувати дістати з екземпляра класу this.perPage;
+// 2 - пофіксити запити спираючись на тоталХітс
+// 3 - не підключати обзервер якщо тоталХатс менше 40
+// 4 - на ф - ції обзервера треба динамічно розуміти що таке остання сторінка
+//   (тоталХітс / 40 - це наш per_page) за допомогою округлення в вищу (Math.ceil()) сторону розуміти яка остання сторінка і по ній порівнювати поточну
